@@ -55,7 +55,7 @@ namespace VOTServer.Infrastructure.Data
             modelBuilder.Entity<Comment>().HasOne(x => x.Video).WithMany().OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.VideoId);
             modelBuilder.Entity<Comment>().HasOne(x => x.Commenter).WithMany().OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.CommenterId);
 
-            modelBuilder.Entity<UserSecurity>().HasOne(x => x.User).WithOne(x => x.UserSecurity).HasForeignKey<UserSecurity>(x => x.Id);
+            modelBuilder.Entity<UserSecurity>().HasOne(x => x.User).WithOne().HasForeignKey<UserSecurity>(x => x.Id);
             modelBuilder.Entity<UserSecurity>().HasIndex(x => x.PhoneNumber).IsUnique();
 
             modelBuilder.Entity<UserRole>().HasData(new UserRole { Id = 1, Name = "Administrators", AccessLevel = 999 });

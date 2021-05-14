@@ -21,11 +21,13 @@ namespace VOTServer.Infrastructure.Data.Repositories
         public virtual async Task AddAsync(TEntity entity)
         {
             await context.AddAsync(entity);
+            await context.SaveChangesAsync();
         }
 
         public virtual async Task AddRangeAsync(IEnumerable<TEntity> entities)
         {
             await context.Set<TEntity>().AddRangeAsync(entities);
+            await context.SaveChangesAsync();
         }
 
         public virtual async Task<int> CountAsync()

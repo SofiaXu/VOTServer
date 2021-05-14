@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using VOTServer.Core.Interface;
 using VOTServer.Infrastructure.Data;
@@ -42,6 +43,7 @@ namespace VOTServer
             {
                 configure.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 configure.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                configure.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
             });
             services.AddAuthentication(options =>
             {

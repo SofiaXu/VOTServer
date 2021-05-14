@@ -26,7 +26,7 @@ namespace VOTServer.Controllers
         private readonly IRepository<UserSecurity> userSecurityRepository;
         private readonly IOptions<JWTOptions> jwtOptions;
 
-        public IdentityController(IRepository<User> repository, IRepository<UserSecurity> repository1, IOptions<JWTOptions> options)
+        public IdentityController(IUserRepository repository, IRepository<UserSecurity> repository1, IOptions<JWTOptions> options)
         {
             userRepository = repository;
             userSecurityRepository = repository1;
@@ -95,7 +95,7 @@ namespace VOTServer.Controllers
         [HttpPost("ChangePassword")]
         public async Task<LoginResponse> ChangePassword([FromBody]ChangePasswordRequest request)
         {
-            if (string.IsNullOrEmpty(request.NewPassword) || request.NewPassword.Length < 8)
+            if (string.IsNullOrEmpty(request.Password) || request.Password.Length < 8)
             {
                 Response.StatusCode = 400;
                 return new LoginResponse { StatusCode = 400, Message = "Password need be longer than 8 characters." };
@@ -114,10 +114,71 @@ namespace VOTServer.Controllers
                 Response.StatusCode = 401;
                 return new LoginResponse { StatusCode = 401, Message = "You cannot change others password." };
             }
-            var passwordHash = Convert.ToBase64String(KeyDerivation.Pbkdf2(request.NewPassword, Encoding.ASCII.GetBytes(jwtOptions.Value.SigningKey), KeyDerivationPrf.HMACSHA256, 1000, 256 / 8));
+            var passwordHash = Convert.ToBase64String(KeyDerivation.Pbkdf2(request.Password, Encoding.ASCII.GetBytes(jwtOptions.Value.SigningKey), KeyDerivationPrf.HMACSHA256, 1000, 256 / 8));
             us.PasswordHash = passwordHash;
+            us.PasswordUpdateTime = DateTime.Now;
             await userSecurityRepository.UpdateAsync(us);
             var u = await userRepository.GetEntityByIdAsync(request.UserId);
+            return new LoginResponse
+            {
+                Content = u,
+                StatusCode = 200,
+                Message = "OK",
+                Token = GetJwtToken(u)
+            };
+        }
+
+        [HttpPost("ChangePhone")]
+        [Authorize]
+        public async Task<LoginResponse> ChangePhone([FromBody] ChangePasswordRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Password) || request.Password.Length < 8)
+            {
+                Response.StatusCode = 400;
+                return new LoginResponse { StatusCode = 400, Message = "Password need be longer than 8 characters." };
+            }
+            if (User.Identity.IsAuthenticated)
+            {
+                if (!User.IsInRole("Administrators") || User.HasClaim(x => x.Type == ClaimTypes.NameIdentifier && long.Parse(x.Value) != request.UserId))
+                {
+                    Response.StatusCode = 401;
+                    return new LoginResponse { StatusCode = 401, Message = "You cannot change others phone number." };
+                }
+            }
+            var us = await userSecurityRepository.GetEntityByIdAsync(request.UserId);
+            var passwordHash = Convert.ToBase64String(KeyDerivation.Pbkdf2(request.Password, Encoding.ASCII.GetBytes(jwtOptions.Value.SigningKey), KeyDerivationPrf.HMACSHA256, 1000, 256 / 8));
+            if (us.PasswordHash != passwordHash)
+            {
+                Response.StatusCode = 401;
+                return new LoginResponse { StatusCode = 401, Message = "You cannot change others phone number." };
+            }
+            us.PhoneNumber = request.PhoneNumber;
+            us.PasswordUpdateTime = DateTime.Now;
+            await userSecurityRepository.UpdateAsync(us);
+            var u = await userRepository.GetEntityByIdAsync(request.UserId);
+            return new LoginResponse
+            {
+                Content = u,
+                StatusCode = 200,
+                Message = "OK",
+                Token = GetJwtToken(u)
+            };
+        }
+
+        [HttpPost("Register")]
+        public async Task<LoginResponse> Register([FromBody] RegisterRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                Response.StatusCode = 400;
+                return new LoginResponse { StatusCode = 400, Message = "Bad Request. Check your information." };
+            }
+            var passwordHash = Convert.ToBase64String(KeyDerivation.Pbkdf2(request.Password, Encoding.ASCII.GetBytes(jwtOptions.Value.SigningKey), KeyDerivationPrf.HMACSHA256, 1000, 256 / 8));
+            User u = new() { EmailAddress = request.EmailAddress, UserRoleId = 3, UserName = request.Username };
+            await userRepository.AddAsync(u);
+            UserSecurity us = new() { PasswordHash = passwordHash, PhoneNumber = request.Password, Id = u.Id };
+            await userSecurityRepository.AddAsync(us);
+            u = await userRepository.GetEntityByIdAsync(u.Id);
             return new LoginResponse
             {
                 Content = u,
@@ -134,7 +195,7 @@ namespace VOTServer.Controllers
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Role, user.UserRole.Name),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim("lrt", DateTimeOffset.Now.ToUniversalTime().ToString())
+                new Claim("lrt", DateTimeOffset.Now.ToUnixTimeSeconds().ToString())
             };
             var token = new JwtSecurityToken(
                 issuer: jwtOptions.Value.Issuer,

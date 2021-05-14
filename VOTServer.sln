@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VOTServer.Core", "VOTServer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VOTServer.Infrastructure", "VOTServer.Infrastructure\VOTServer.Infrastructure.csproj", "{0A139649-FA64-43C1-8CFA-D664ED0D448B}"
 EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "VOTFrontend", "VOTFrontend\VOTFrontend.njsproj", "{452D6F33-C31B-4E83-98BE-87FF3D20B508}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{0A139649-FA64-43C1-8CFA-D664ED0D448B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A139649-FA64-43C1-8CFA-D664ED0D448B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A139649-FA64-43C1-8CFA-D664ED0D448B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{452D6F33-C31B-4E83-98BE-87FF3D20B508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{452D6F33-C31B-4E83-98BE-87FF3D20B508}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{452D6F33-C31B-4E83-98BE-87FF3D20B508}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{452D6F33-C31B-4E83-98BE-87FF3D20B508}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

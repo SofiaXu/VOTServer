@@ -27,7 +27,7 @@ namespace VOTServer.Models
         public virtual ICollection<Favorite> Favorites { get; set; }
 
         public virtual ICollection<Video> UploadedVideos { get; set; }
-
+        [NotMapped]
         public UserSecurity UserSecurity { get; set; }
     }
 }

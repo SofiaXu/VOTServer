@@ -11,8 +11,10 @@ namespace VOTServer.Requests
         [Required]
         public long UserId { get; set; }
         [Required]
-        public string NewPassword { get; set; }
+        [StringLength(11)]
+        public string Password { get; set; }
         [Required]
+        [Phone]
         public string PhoneNumber { get; set; }
     }
 }
