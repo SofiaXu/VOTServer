@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using VOTServer.Core.Interface;
-using VOTServer.Models;
+using VOTServer.Core.ViewModels;
+using VOTServer.Requests;
 using VOTServer.Responses;
 
 namespace VOTServer.Controllers
@@ -15,35 +16,35 @@ namespace VOTServer.Controllers
     [ApiController]
     public class VideoController : ControllerBase
     {
-        private readonly IRepository<Video> repository;
-        public VideoController(IRepository<Video> repository)
+        private readonly IVideoService service;
+        public VideoController(IVideoService service)
         {
-            this.repository = repository;
+            this.service = service;
         }
 
         [HttpGet("{id}")]
-        public async Task<JsonResponse<Video>> GetVideo(long id)
+        public async Task<JsonResponse<VideoViewModel>> GetVideo(long id)
         {
             if (id <= 0)
             {
                 Response.StatusCode = 400;
-                return new JsonResponse<Video>
+                return new JsonResponse<VideoViewModel>
                 {
                     Message = "Bad Request",
                     StatusCode = 400
                 };
             }
-            var v = await repository.GetEntityByIdAsync(id);
+            var v = await service.GetVideo(id);
             if (v == null)
             {
                 Response.StatusCode = 400;
-                return new JsonResponse<Video>
+                return new JsonResponse<VideoViewModel>
                 {
                     Message = "Bad Request",
                     StatusCode = 400
                 };
             }
-            return new JsonResponse<Video>
+            return new JsonResponse<VideoViewModel>
             {
                 StatusCode = 200,
                 Content = v,
@@ -52,7 +53,7 @@ namespace VOTServer.Controllers
         }
 
         [HttpGet]
-        public async Task<JsonResponse<IEnumerable<Video>>> Get(int page, int pageSize)
+        public async Task<JsonResponse<IEnumerable<VideoViewModel>>> GetVideos(int page, int pageSize)
         {
             if (page <= 0)
             {
@@ -62,32 +63,40 @@ namespace VOTServer.Controllers
             {
                 pageSize = 10;
             }
-            return new JsonResponse<IEnumerable<Video>>
+            return new JsonResponse<IEnumerable<VideoViewModel>>
             {
                 StatusCode = 200,
                 Message = "OK",
-                Content = await repository.GetAllAsync(pageSize, page)
+                Content = await service.GetVideos(page, pageSize)
             };
         }
 
         [HttpPost("Upload")]
         [Authorize]
-        public Task<JsonResponse<Video>> UploadVideo()
+        public Task<JsonResponse> UploadVideo()
         {
             throw new NotImplementedException();
         }
 
         [HttpPost("Create")]
         [Authorize]
-        public Task<JsonResponse<Video>> CreateVideoInformation()
+        public async Task<JsonResponse> CreateVideoInformation([FromForm]CreateVideoInformationRequest request)
         {
-            throw new NotImplementedException();
+            _ = ModelState.IsValid;
+            await service.CreateAsync(new VideoTagViewModel
+            {
+                Info = request.Info,
+                UploaderId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value),
+                Title = request.Title,
+                Tags = request.Tags.Select(x => new TagViewModel { Id = x })
+            });
+            return new JsonResponse { StatusCode = 200, Message = "OK" };
         }
 
         [HttpGet("Stream/{id}")]
         public async Task<IActionResult> GetVideoFile(long id)
         {
-            var v = await repository.GetEntityByIdAsync(id);
+            var v = await service.GetVideo(id);
             if (id <= 0)
             {
                 return NotFound();
@@ -96,14 +105,13 @@ namespace VOTServer.Controllers
             {
                 return NotFound();
             }
-            if (v.IsDelete != null && v.IsDelete.Value)
+            if (v.VideoStatus != VideoStatus.Normal)
             {
                 return NotFound();
             }
             if (!System.IO.File.Exists($"{System.IO.Directory.GetCurrentDirectory()}/Videos/{id}.mp4"))
             {
-                v.IsDelete = true;
-                await repository.UpdateAsync(v);
+                await service.UpdateAsync(new VideoTagViewModel { Id = id, VideoStatus = VideoStatus.Deleted });
                 return NotFound();
             }
             return PhysicalFile($"{System.IO.Directory.GetCurrentDirectory()}/Videos/{id}.mp4", "video/mp4", true);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VOTServer.Core.Interface;
-using VOTServer.Models;
+using VOTServer.Core.ViewModels;
 using VOTServer.Responses;
 
 namespace VOTServer.Controllers
@@ -11,32 +11,32 @@ namespace VOTServer.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository repository;
+        private readonly IUserService userService;
 
-        public UserController(IUserRepository repository)
+        public UserController(IUserService userService)
         {
-            this.repository = repository;
+            this.userService = userService;
         }
 
         [HttpGet("{id}")]
-        public async Task<JsonResponse<User>> GetUser(long id)
+        public async Task<JsonResponse<UserViewModel>> GetUser(long id)
         {
             if (id < 1)
             {
                 Response.StatusCode = 404;
-                return new JsonResponse<User> { StatusCode = 404, Message = "Not Found", Content = null };
+                return new JsonResponse<UserViewModel> { StatusCode = 404, Message = "Not Found", Content = null };
             }
-            var u = await repository.GetEntityByIdAsync(id);
+            var u = User.Identity.IsAuthenticated ? await userService.GetUserAsync(id, long.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value)) : await userService.GetUserAsync(id);
             if (u == null)
             {
                 Response.StatusCode = 404;
-                return new JsonResponse<User> { StatusCode = 404, Message = "Not Found", Content = null };
+                return new JsonResponse<UserViewModel> { StatusCode = 404, Message = "Not Found", Content = null };
             }
-            return new JsonResponse<User> { StatusCode = 200, Message = "OK", Content = u };
+            return new JsonResponse<UserViewModel> { StatusCode = 200, Message = "OK", Content = u };
         }
 
         [HttpGet]
-        public async Task<JsonResponse<IEnumerable<User>>> GetUsers(int page, int pageSize)
+        public async Task<JsonResponse<IEnumerable<UserViewModel>>> GetUsers(int page, int pageSize)
         {
             if (pageSize <= 0)
             {
@@ -46,7 +46,7 @@ namespace VOTServer.Controllers
             {
                 page = 1;
             }
-            return new JsonResponse<IEnumerable<User>> { StatusCode = 200, Message = "OK", Content = await repository.GetAllAsync(pageSize, page) };
+            return new JsonResponse<IEnumerable<UserViewModel>> { StatusCode = 200, Message = "OK", Content = await userService.GetUsersAsync(pageSize, page) };
         }
     }
 }

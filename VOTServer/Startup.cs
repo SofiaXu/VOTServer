@@ -1,27 +1,18 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using VOTServer.Core.Interface;
+using VOTServer.Core.Services;
 using VOTServer.Infrastructure.Data;
 using VOTServer.Infrastructure.Data.Repositories;
-using VOTServer.Models;
-using VOTServer.Models.Interface;
 using VOTServer.Options;
 
 namespace VOTServer
@@ -43,7 +34,6 @@ namespace VOTServer
             {
                 configure.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 configure.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                configure.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
             });
             services.AddAuthentication(options =>
             {
@@ -71,8 +61,14 @@ namespace VOTServer
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "VOTServer", Version = "v1" });
             });
             services.AddDbContext<VOTDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer"), b => b.MigrationsAssembly("VOTServer")));
+            // Repository
             services.AddScoped(typeof(IRepository<>), typeof(RepositoryBase<>));
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IVideoRepository, VideoRepository>();
+
+            // Data Service
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IVideoService, VideoService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -93,7 +93,7 @@ namespace VOTServer.Controllers
         }
 
         [HttpPost("ChangePassword")]
-        public async Task<LoginResponse> ChangePassword([FromBody]ChangePasswordRequest request)
+        public async Task<LoginResponse> ChangePassword([FromBody] ChangePasswordRequest request)
         {
             if (string.IsNullOrEmpty(request.Password) || request.Password.Length < 8)
             {

@@ -1,9 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VOTServer.Models;
 
 namespace VOTServer.Infrastructure.Data
@@ -34,8 +30,8 @@ namespace VOTServer.Infrastructure.Data
         {
             modelBuilder.Entity<Follow>().HasCheckConstraint("CK_NotEqual", "FollowerId <> FolloweeId");
             modelBuilder.Entity<Follow>().HasIndex(x => new { x.FollowerId, x.FolloweeId }).IsUnique();
-            modelBuilder.Entity<Follow>().HasOne(x => x.Follower).WithMany().OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.FollowerId);
-            modelBuilder.Entity<Follow>().HasOne(x => x.Followee).WithMany().OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.FolloweeId);
+            modelBuilder.Entity<Follow>().HasOne(x => x.Follower).WithMany(x => x.Followees).OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.FollowerId);
+            modelBuilder.Entity<Follow>().HasOne(x => x.Followee).WithMany(x => x.Followers).OnDelete(DeleteBehavior.NoAction).HasForeignKey(x => x.FolloweeId);
 
             modelBuilder.Entity<Tag>().HasIndex(x => x.Name).IsUnique();
 

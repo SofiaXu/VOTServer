@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using VOTServer.Models.Interface;
 
@@ -64,5 +63,7 @@ namespace VOTServer.Core.Interface
         public Task<IEnumerable<TEntity>> SearchAsync(System.Linq.Expressions.Expression<Func<TEntity, bool>> expression, int pageSize, int page);
 
         public Task<int> CountAsync();
+
+        public IQueryable<TEntity> Query();
     }
 }

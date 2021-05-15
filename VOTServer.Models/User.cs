@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using VOTServer.Models.Interface;
@@ -29,5 +28,12 @@ namespace VOTServer.Models
         public virtual ICollection<Video> UploadedVideos { get; set; }
         [NotMapped]
         public UserSecurity UserSecurity { get; set; }
+
+        public virtual ICollection<Follow> Followers { get; set; }
+
+        public virtual ICollection<Follow> Followees { get; set; }
+
+        [NotMapped]
+        public bool IsFollowed { get; set; }
     }
 }

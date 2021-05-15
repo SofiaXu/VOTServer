@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using VOTServer.Core.Interface;
 using VOTServer.Models.Interface;
@@ -48,6 +47,11 @@ namespace VOTServer.Infrastructure.Data.Repositories
         public virtual async Task<TEntity> GetEntityByIdAsync(long id)
         {
             return await context.Set<TEntity>().FindAsync(id);
+        }
+
+        public IQueryable<TEntity> Query()
+        {
+            return context.Set<TEntity>().AsQueryable();
         }
 
         public virtual async Task RemoveAsync(TEntity entity)
