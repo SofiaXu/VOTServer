@@ -80,7 +80,7 @@ namespace VOTServer.Controllers
 
         [HttpPost("Create")]
         [Authorize]
-        public async Task<JsonResponse> CreateVideoInformation([FromForm]CreateVideoInformationRequest request)
+        public async Task<JsonResponse> CreateVideoInformation([FromForm] CreateVideoInformationRequest request)
         {
             _ = ModelState.IsValid;
             await service.CreateAsync(new VideoTagViewModel

@@ -65,10 +65,12 @@ namespace VOTServer
             services.AddScoped(typeof(IRepository<>), typeof(RepositoryBase<>));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IVideoRepository, VideoRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
 
             // Data Service
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IVideoService, VideoService>();
+            services.AddScoped<ICommentService, CommentService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
