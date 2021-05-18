@@ -65,5 +65,7 @@ namespace VOTServer.Core.Interface
         public Task<int> CountAsync();
 
         public IQueryable<TEntity> Query();
+
+        public Task<bool> ExistsAsync(System.Linq.Expressions.Expression<Func<TEntity, bool>> expression);
     }
 }

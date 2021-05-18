@@ -15,7 +15,7 @@ namespace VOTServer.Requests
         [StringLength(11)]
         [Required]
         [Phone]
-        public string Phone { get; set; }
+        public string PhoneNumber { get; set; }
 
         [MinLength(8)]
         [Required]

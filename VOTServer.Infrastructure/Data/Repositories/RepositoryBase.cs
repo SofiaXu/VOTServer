@@ -34,6 +34,11 @@ namespace VOTServer.Infrastructure.Data.Repositories
             return await context.Set<TEntity>().Where(x => x.IsDelete == null).CountAsync();
         }
 
+        public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> expression)
+        {
+            return await context.Set<TEntity>().Where(expression).AnyAsync();
+        }
+
         public virtual async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> expression)
         {
             return await context.Set<TEntity>().FirstOrDefaultAsync(expression);
