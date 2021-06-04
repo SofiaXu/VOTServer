@@ -23,12 +23,12 @@ namespace VOTServer.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<JsonResponse<VideoViewModel>> GetVideo(long id)
+        public async Task<JsonResponse<VideoTagViewModel>> GetVideo(long id)
         {
             if (id <= 0)
             {
                 Response.StatusCode = 400;
-                return new JsonResponse<VideoViewModel>
+                return new JsonResponse<VideoTagViewModel>
                 {
                     Message = "Bad Request",
                     StatusCode = 400
@@ -38,13 +38,13 @@ namespace VOTServer.Controllers
             if (v == null)
             {
                 Response.StatusCode = 400;
-                return new JsonResponse<VideoViewModel>
+                return new JsonResponse<VideoTagViewModel>
                 {
                     Message = "Bad Request",
                     StatusCode = 400
                 };
             }
-            return new JsonResponse<VideoViewModel>
+            return new JsonResponse<VideoTagViewModel>
             {
                 StatusCode = 200,
                 Content = v,
@@ -68,6 +68,25 @@ namespace VOTServer.Controllers
                 StatusCode = 200,
                 Message = "OK",
                 Content = await service.GetVideos(page, pageSize)
+            };
+        }
+
+        [HttpGet("Search")]
+        public async Task<JsonResponse<IEnumerable<VideoViewModel>>> GetVideos(string name, int page, int pageSize)
+        {
+            if (page <= 0)
+            {
+                page = 1;
+            }
+            if (pageSize <= 0)
+            {
+                pageSize = 10;
+            }
+            return new JsonResponse<IEnumerable<VideoViewModel>>
+            {
+                StatusCode = 200,
+                Message = "OK",
+                Content = await service.SearchVideos(name, page, pageSize)
             };
         }
 

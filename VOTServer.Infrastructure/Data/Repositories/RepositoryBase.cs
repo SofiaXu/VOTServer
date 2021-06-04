@@ -31,7 +31,7 @@ namespace VOTServer.Infrastructure.Data.Repositories
 
         public virtual async Task<int> CountAsync()
         {
-            return await context.Set<TEntity>().Where(x => x.IsDelete == null).CountAsync();
+            return await context.Set<TEntity>().Where(x => x.IsDelete != true).CountAsync();
         }
 
         public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> expression)
@@ -46,7 +46,7 @@ namespace VOTServer.Infrastructure.Data.Repositories
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(int pageSize, int page)
         {
-            return await context.Set<TEntity>().Where(x => x.IsDelete == null).Skip((page - 1) * pageSize).Take(pageSize).ToArrayAsync();
+            return await context.Set<TEntity>().Where(x => x.IsDelete != true).Skip((page - 1) * pageSize).Take(pageSize).ToArrayAsync();
         }
 
         public virtual async Task<TEntity> GetEntityByIdAsync(long id)

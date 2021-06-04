@@ -26,7 +26,7 @@ namespace VOTServer.Controllers
                 Response.StatusCode = 404;
                 return new JsonResponse<UserViewModel> { StatusCode = 404, Message = "Not Found", Content = null };
             }
-            var u = User.Identity.IsAuthenticated ? await userService.GetUserAsync(id, long.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value)) : await userService.GetUserAsync(id);
+            var u = await userService.GetUserAsync(id);
             if (u == null)
             {
                 Response.StatusCode = 404;
@@ -48,5 +48,7 @@ namespace VOTServer.Controllers
             }
             return new JsonResponse<IEnumerable<UserViewModel>> { StatusCode = 200, Message = "OK", Content = await userService.GetUsersAsync(pageSize, page) };
         }
+
+
     }
 }

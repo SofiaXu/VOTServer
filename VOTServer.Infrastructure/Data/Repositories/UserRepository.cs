@@ -18,12 +18,12 @@ namespace VOTServer.Infrastructure.Data.Repositories
 
         public override async Task<IEnumerable<User>> GetAllAsync(int pageSize, int page)
         {
-            return await context.Set<User>().Include(s => s.UserRole).Where(x => x.IsDelete == null).Skip((page - 1) * pageSize).Take(pageSize).ToArrayAsync();
+            return await context.Set<User>().Include(s => s.UserRole).Where(x => x.IsDelete != true).Skip((page - 1) * pageSize).Take(pageSize).ToArrayAsync();
         }
 
         public async Task<IEnumerable<Favorite>> GetUserFavorites(long id, int page, int pageSize)
         {
-            return await context.Set<Favorite>().Include(x => x.Video).Where(x => x.IsDelete == null && x.UserId == id).Skip((page - 1) * pageSize).Take(pageSize).ToArrayAsync();
+            return await context.Set<Favorite>().Include(x => x.Video).Where(x => x.IsDelete != true && x.UserId == id).Skip((page - 1) * pageSize).Take(pageSize).ToArrayAsync();
         }
 
         public async Task<IEnumerable<User>> GetUsersWithFollower(long followerId, int pageSize, int page)

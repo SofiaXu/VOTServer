@@ -51,7 +51,19 @@ namespace VOTServer.Controllers
             var u = await userRepository.GetEntityByIdAsync(request.UserId);
             return new LoginResponse
             {
-                Content = u,
+                Content = new()
+                {
+                    EmailAddress = u.EmailAddress,
+                    Id = u.Id,
+                    IsFollowed = false,
+                    UserName = u.UserName,
+                    UserRole = new()
+                    {
+                        Id = u.UserRole.Id,
+                        AccessLevel = u.UserRole.AccessLevel,
+                        Name = u.UserRole.Name
+                    },
+                },
                 StatusCode = 200,
                 Message = "OK",
                 Token = GetJwtToken(u)
@@ -121,7 +133,19 @@ namespace VOTServer.Controllers
             var u = await userRepository.GetEntityByIdAsync(request.UserId);
             return new LoginResponse
             {
-                Content = u,
+                Content = new()
+                {
+                    EmailAddress = u.EmailAddress,
+                    Id = u.Id,
+                    IsFollowed = false,
+                    UserName = u.UserName,
+                    UserRole = new()
+                    {
+                        Id = u.UserRole.Id,
+                        AccessLevel = u.UserRole.AccessLevel,
+                        Name = u.UserRole.Name
+                    },
+                },
                 StatusCode = 200,
                 Message = "OK",
                 Token = GetJwtToken(u)
@@ -158,7 +182,19 @@ namespace VOTServer.Controllers
             var u = await userRepository.GetEntityByIdAsync(request.UserId);
             return new LoginResponse
             {
-                Content = u,
+                Content = new()
+                {
+                    EmailAddress = u.EmailAddress,
+                    Id = u.Id,
+                    IsFollowed = false,
+                    UserName = u.UserName,
+                    UserRole = new()
+                    {
+                        Id = u.UserRole.Id,
+                        AccessLevel = u.UserRole.AccessLevel,
+                        Name = u.UserRole.Name
+                    },
+                },
                 StatusCode = 200,
                 Message = "OK",
                 Token = GetJwtToken(u)
@@ -181,7 +217,19 @@ namespace VOTServer.Controllers
             u = await userRepository.GetEntityByIdAsync(u.Id);
             return new LoginResponse
             {
-                Content = u,
+                Content = new()
+                {
+                    EmailAddress = u.EmailAddress,
+                    Id = u.Id,
+                    IsFollowed = false,
+                    UserName = u.UserName,
+                    UserRole = new()
+                    {
+                        Id = u.UserRole.Id,
+                        AccessLevel = u.UserRole.AccessLevel,
+                        Name = u.UserRole.Name
+                    },
+                },
                 StatusCode = 200,
                 Message = "OK",
                 Token = GetJwtToken(u)

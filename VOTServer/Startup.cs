@@ -83,9 +83,9 @@ namespace VOTServer
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VOTServer v1"));
             }
-
+#if DEBUG
             app.UseHttpsRedirection();
-
+#endif
             app.UseRouting();
 
             app.UseAuthentication();

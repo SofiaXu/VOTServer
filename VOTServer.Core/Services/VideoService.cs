@@ -39,7 +39,8 @@ namespace VOTServer.Core.Services
                 Title = v.Title,
                 Uploader = new UserViewModel
                 {
-                    Id = v.UploaderId
+                    Id = v.UploaderId,
+                    UserName = v.Uploader.UserName
                 },
                 UploadTime = v.UploadTime
             };
@@ -97,6 +98,27 @@ namespace VOTServer.Core.Services
                     _ => null
                 }
             });
+        }
+
+        public async Task<IEnumerable<VideoViewModel>> SearchVideos(string name, int page, int pageSize)
+        {
+            return (await videoRepository.SearchAsync(v => v.Title.Contains(name), pageSize, page))
+                .Select(x => new VideoViewModel
+                {
+                    CommentsCount = x.CommentsCount,
+                    FavoriteCount = x.FavoriteCount,
+                    GoodCount = x.GoodCount,
+                    Id = x.Id,
+                    Info = x.Info,
+                    Title = x.Title,
+                    Uploader = new UserViewModel
+                    {
+                        Id = x.UploaderId,
+                        UserName = x.Uploader.UserName
+                    },
+                    VideoStatus = x.IsDelete.HasValue ? x.IsDelete.Value ? VideoStatus.Deleted : VideoStatus.Normal : VideoStatus.WaitUpload,
+                    UploadTime = x.UploadTime
+                });
         }
     }
 }

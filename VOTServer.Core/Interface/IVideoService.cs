@@ -9,6 +9,7 @@ namespace VOTServer.Core.Interface
         Task CreateAsync(VideoTagViewModel video);
         Task<VideoTagViewModel> GetVideo(long id);
         Task<IEnumerable<VideoViewModel>> GetVideos(int page, int pageSize);
+        Task<IEnumerable<VideoViewModel>> SearchVideos(string name, int page, int pageSize);
         Task UpdateAsync(VideoTagViewModel video);
     }
 }
